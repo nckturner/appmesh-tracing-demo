@@ -19,3 +19,6 @@ spec:
       provider: jaeger
       address: appmesh-jaeger.appmesh-system
       port: 9411
+    image:
+      repository: 352684330888.dkr.ecr.us-west-2.amazonaws.com/amazon/aws-app-mesh-inject
+      tag: v0.3.1-alpha.1
