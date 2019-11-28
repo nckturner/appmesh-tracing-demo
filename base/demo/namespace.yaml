@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: demo
+  name: sock-shop
   annotations:
     fluxcd.io/ignore: "true"
   labels:
