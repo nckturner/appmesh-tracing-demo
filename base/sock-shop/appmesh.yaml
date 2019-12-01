@@ -1,6 +1,49 @@
 apiVersion: appmesh.k8s.aws/v1beta1
 kind: VirtualNode
 metadata:
+  name: front-end
+  namespace: sock-shop
+spec:
+  meshName: "reinvent-2019"
+  listeners:
+    - portMapping:
+        port: 8079
+        protocol: http
+  serviceDiscovery:
+    cloudMap:
+      namespaceName: "reinvent-2019"
+      serviceName: front-end
+  logging:
+    accessLog:
+      file:
+        path: /dev/stdout
+---
+apiVersion: appmesh.k8s.aws/v1beta1
+kind: VirtualService
+metadata:
+  name: front-end
+  namespace: sock-shop
+spec:
+  meshName: "reinvent-2019"
+  virtualRouter:
+    name: front-end-router
+    listeners:
+      - portMapping:
+          port: 27017
+          protocol: tcp
+  routes:
+    - name: route-front-end
+      http:
+        match:
+          prefix: /
+        action:
+          weightedTargets:
+            - virtualNodeName: carts-db
+              weight: 1
+---
+apiVersion: appmesh.k8s.aws/v1beta1
+kind: VirtualNode
+metadata:
   name: carts-db
   namespace: sock-shop
 spec:
@@ -31,12 +74,3 @@ spec:
       - portMapping:
           port: 27017
           protocol: tcp
-  routes:
-    - name: route-carts-db
-      http:
-        match:
-          prefix: /
-        action:
-          weightedTargets:
-            - virtualNodeName: carts-db
-              weight: 1
