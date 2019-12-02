@@ -60,6 +60,10 @@ spec:
     accessLog:
       file:
         path: /dev/stdout
+  backends:
+    - virtualService:
+        virtualServiceName: carts-db
+
 ---
 apiVersion: appmesh.k8s.aws/v1beta1
 kind: VirtualService
@@ -148,6 +152,9 @@ spec:
     accessLog:
       file:
         path: /dev/stdout
+  backends:
+    - virtualService:
+        virtualServiceName: catalogue-db
 ---
 apiVersion: appmesh.k8s.aws/v1beta1
 kind: VirtualService
@@ -172,13 +179,7 @@ spec:
             - virtualNodeName: catalogue
               weight: 1
 
-
-
-
-
-
-
-
+---
 apiVersion: appmesh.k8s.aws/v1beta1
 kind: VirtualNode
 metadata:
@@ -199,6 +200,14 @@ spec:
       file:
         path: /dev/stdout
   backends:
+    - virtualService:
+        virtualServiceName: orders
+    - virtualService:
+        virtualServiceName: catalogue
+    - virtualService:
+        virtualServiceName: payment
+    - virtualService:
+        virtualServiceName: cart
     - virtualService:
         virtualServiceName: orders
 ---
@@ -287,6 +296,11 @@ spec:
     accessLog:
       file:
         path: /dev/stdout
+  backends:
+    - virtualService:
+        virtualServiceName: orders-db
+    - virtualService:
+        virtualServiceName: shipping
 ---
 apiVersion: appmesh.k8s.aws/v1beta1
 kind: VirtualService
@@ -357,50 +371,6 @@ spec:
               weight: 1
 
 
----
-apiVersion: appmesh.k8s.aws/v1beta1
-kind: VirtualNode
-metadata:
-  name: payment
-  namespace: sock-shop
-spec:
-  meshName: "reinvent-2019"
-  listeners:
-    - portMapping:
-        port: 80
-        protocol: http
-  serviceDiscovery:
-    cloudMap:
-      namespaceName: "reinvent-2019"
-      serviceName: payment
-  logging:
-    accessLog:
-      file:
-        path: /dev/stdout
----
-apiVersion: appmesh.k8s.aws/v1beta1
-kind: VirtualService
-metadata:
-  name: payment
-  namespace: sock-shop
-spec:
-  meshName: "reinvent-2019"
-  virtualRouter:
-    name: payment-router
-    listeners:
-      - portMapping:
-          port: 80
-          protocol: http
-  routes:
-    - name: route-payment
-      http:
-        match:
-          prefix: /
-        action:
-          weightedTargets:
-            - virtualNodeName: payment
-              weight: 1
-
 
 ---
 apiVersion: appmesh.k8s.aws/v1beta1
@@ -422,6 +392,7 @@ spec:
     accessLog:
       file:
         path: /dev/stdout
+
 ---
 apiVersion: appmesh.k8s.aws/v1beta1
 kind: VirtualService
@@ -467,6 +438,9 @@ spec:
     accessLog:
       file:
         path: /dev/stdout
+  backends:
+    - virtualService:
+        virtualServiceName: queue-master
 ---
 apiVersion: appmesh.k8s.aws/v1beta1
 kind: VirtualService
