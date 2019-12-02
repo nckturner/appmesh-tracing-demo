@@ -210,7 +210,8 @@ spec:
     - virtualService:
         virtualServiceName: cart
     - virtualService:
-        virtualServiceName: orders
+        virtualServiceName: user
+
 ---
 apiVersion: appmesh.k8s.aws/v1beta1
 kind: VirtualService
