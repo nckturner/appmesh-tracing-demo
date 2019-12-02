@@ -102,7 +102,7 @@ spec:
         protocol: tcp
   serviceDiscovery:
     dns:
-      hostname: catalogue-db.sock-shop.svc.cluster.local
+      hostName: catalogue-db.sock-shop.svc.cluster.local
     #cloudMap:
     #  namespaceName: "reinvent-2019"
     #  serviceName: catalogue-db
