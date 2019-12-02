@@ -102,7 +102,7 @@ spec:
   serviceDiscovery:
     cloudMap:
       namespaceName: "reinvent-2019"
-      serviceName: carts
+      serviceName: catalogue-db
   logging:
     accessLog:
       file:
