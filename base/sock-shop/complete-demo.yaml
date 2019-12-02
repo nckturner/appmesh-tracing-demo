@@ -122,8 +122,8 @@ spec:
   template:
     metadata:
       # DISABLED INJECTION
-      annotations:
-        appmesh.k8s.aws/sidecarInjectorWebhook: disabled
+      #annotations:
+      #  appmesh.k8s.aws/sidecarInjectorWebhook: disabled
       labels:
         name: catalogue-db
     spec:
