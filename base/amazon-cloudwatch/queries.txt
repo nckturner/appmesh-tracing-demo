@@ -1,0 +1,15 @@
+fields @timestamp, kubernetes.namespace_name, kubernetes.pod_name, log, @message
+| filter kubernetes.pod_name like /catalogue/
+| filter kubernetes.container_name not like /envoy/
+| sort @timestamp desc
+
+
+
+fields @timestamp, kubernetes.pod_name, kubernetes.namespace_name, kubernetes.container_name, @message
+| filter kubernetes.namespace_name like /sock-shop/
+| filter kubernetes.pod_name like /catalogue/
+| filter kubernetes.container_name like /catalogue/
+| filter log like /unexpected EOF/
+| sort @timestamp asc
+| stats count(*) by bin(30s)
+

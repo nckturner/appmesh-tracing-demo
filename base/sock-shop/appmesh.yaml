@@ -88,51 +88,51 @@ spec:
             - virtualNodeName: carts
               weight: 1
 
----
-apiVersion: appmesh.k8s.aws/v1beta1
-kind: VirtualNode
-metadata:
-  name: catalogue-db
-  namespace: sock-shop
-spec:
-  meshName: "reinvent-2019"
-  listeners:
-    - portMapping:
-        port: 3306
-        protocol: tcp
-  serviceDiscovery:
-    dns:
-      hostName: catalogue-db.sock-shop.svc.cluster.local
-    #cloudMap:
-    #  namespaceName: "reinvent-2019"
-    #  serviceName: catalogue-db
-  logging:
-    accessLog:
-      file:
-        path: /dev/stdout
----
-apiVersion: appmesh.k8s.aws/v1beta1
-kind: VirtualService
-metadata:
-  name: catalogue-db
-  namespace: sock-shop
-spec:
-  meshName: "reinvent-2019"
-  virtualRouter:
-    name: catalogue-db-router
-    listeners:
-      - portMapping:
-          port: 3306
-          protocol: tcp
-  routes:
-    - name: route-catalogue-db
-      tcp:
-        action:
-          weightedTargets:
-            - virtualNodeName: catalogue-db
-              weight: 1
-
-
+#---
+#apiVersion: appmesh.k8s.aws/v1beta1
+#kind: VirtualNode
+#metadata:
+#  name: catalogue-db
+#  namespace: sock-shop
+#spec:
+#  meshName: "reinvent-2019"
+#  listeners:
+#    - portMapping:
+#        port: 3306
+#        protocol: tcp
+#  serviceDiscovery:
+#    dns:
+#      hostName: catalogue-db.sock-shop.svc.cluster.local
+#    #cloudMap:
+#    #  namespaceName: "reinvent-2019"
+#    #  serviceName: catalogue-db
+#  logging:
+#    accessLog:
+#      file:
+#        path: /dev/stdout
+#---
+#apiVersion: appmesh.k8s.aws/v1beta1
+#kind: VirtualService
+#metadata:
+#  name: catalogue-db
+#  namespace: sock-shop
+#spec:
+#  meshName: "reinvent-2019"
+#  virtualRouter:
+#    name: catalogue-db-router
+#    listeners:
+#      - portMapping:
+#          port: 3306
+#          protocol: tcp
+#  routes:
+#    - name: route-catalogue-db
+#      tcp:
+#        action:
+#          weightedTargets:
+#            - virtualNodeName: catalogue-db
+#              weight: 1
+#
+#
 ---
 apiVersion: appmesh.k8s.aws/v1beta1
 kind: VirtualNode
