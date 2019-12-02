@@ -1,49 +1,6 @@
 apiVersion: appmesh.k8s.aws/v1beta1
 kind: VirtualNode
 metadata:
-  name: front-end
-  namespace: sock-shop
-spec:
-  meshName: "reinvent-2019"
-  listeners:
-    - portMapping:
-        port: 8079
-        protocol: http
-  serviceDiscovery:
-    cloudMap:
-      namespaceName: "reinvent-2019"
-      serviceName: front-end
-  logging:
-    accessLog:
-      file:
-        path: /dev/stdout
----
-apiVersion: appmesh.k8s.aws/v1beta1
-kind: VirtualService
-metadata:
-  name: front-end
-  namespace: sock-shop
-spec:
-  meshName: "reinvent-2019"
-  virtualRouter:
-    name: front-end-router
-    listeners:
-      - portMapping:
-          port: 27017
-          protocol: tcp
-  routes:
-    - name: route-front-end
-      http:
-        match:
-          prefix: /
-        action:
-          weightedTargets:
-            - virtualNodeName: carts-db
-              weight: 1
----
-apiVersion: appmesh.k8s.aws/v1beta1
-kind: VirtualNode
-metadata:
   name: carts-db
   namespace: sock-shop
 spec:
@@ -74,3 +31,595 @@ spec:
       - portMapping:
           port: 27017
           protocol: tcp
+  routes:
+    - name: route-carts-db
+      tcp:
+        action:
+          weightedTargets:
+            - virtualNodeName: carts-db
+              weight: 1
+
+
+---
+apiVersion: appmesh.k8s.aws/v1beta1
+kind: VirtualNode
+metadata:
+  name: carts
+  namespace: sock-shop
+spec:
+  meshName: "reinvent-2019"
+  listeners:
+    - portMapping:
+        port: 80
+        protocol: http
+  serviceDiscovery:
+    cloudMap:
+      namespaceName: "reinvent-2019"
+      serviceName: carts
+  logging:
+    accessLog:
+      file:
+        path: /dev/stdout
+---
+apiVersion: appmesh.k8s.aws/v1beta1
+kind: VirtualService
+metadata:
+  name: carts
+  namespace: sock-shop
+spec:
+  meshName: "reinvent-2019"
+  virtualRouter:
+    name: carts-router
+    listeners:
+      - portMapping:
+          port: 80
+          protocol: http
+  routes:
+    - name: route-carts
+      http:
+        match:
+          prefix: /
+        action:
+          weightedTargets:
+            - virtualNodeName: carts
+              weight: 1
+---
+apiVersion: appmesh.k8s.aws/v1beta1
+kind: VirtualNode
+metadata:
+  name: catalogue-db
+  namespace: sock-shop
+spec:
+  meshName: "reinvent-2019"
+  listeners:
+    - portMapping:
+        port: 3306
+        protocol: tcp
+  serviceDiscovery:
+    cloudMap:
+      namespaceName: "reinvent-2019"
+      serviceName: carts
+  logging:
+    accessLog:
+      file:
+        path: /dev/stdout
+---
+apiVersion: appmesh.k8s.aws/v1beta1
+kind: VirtualService
+metadata:
+  name: catalogue-db
+  namespace: sock-shop
+spec:
+  meshName: "reinvent-2019"
+  virtualRouter:
+    name: catalogue-db-router
+    listeners:
+      - portMapping:
+          port: 3306
+          protocol: tcp
+  routes:
+    - name: route-catalogue-db
+      tcp:
+        action:
+          weightedTargets:
+            - virtualNodeName: catalogue-db
+              weight: 1
+
+
+
+
+---
+apiVersion: appmesh.k8s.aws/v1beta1
+kind: VirtualNode
+metadata:
+  name: catalogue
+  namespace: sock-shop
+spec:
+  meshName: "reinvent-2019"
+  listeners:
+    - portMapping:
+        port: 80
+        protocol: http
+  serviceDiscovery:
+    cloudMap:
+      namespaceName: "reinvent-2019"
+      serviceName: catalogue
+  logging:
+    accessLog:
+      file:
+        path: /dev/stdout
+---
+apiVersion: appmesh.k8s.aws/v1beta1
+kind: VirtualService
+metadata:
+  name: catalogue
+  namespace: sock-shop
+spec:
+  meshName: "reinvent-2019"
+  virtualRouter:
+    name: catalogue-router
+    listeners:
+      - portMapping:
+          port: 80
+          protocol: http
+  routes:
+    - name: route-catalogue
+      http:
+        match:
+          prefix: /
+        action:
+          weightedTargets:
+            - virtualNodeName: catalogue
+              weight: 1
+
+
+
+
+
+
+
+
+apiVersion: appmesh.k8s.aws/v1beta1
+kind: VirtualNode
+metadata:
+  name: front-end
+  namespace: sock-shop
+spec:
+  meshName: "reinvent-2019"
+  listeners:
+    - portMapping:
+        port: 8079
+        protocol: http
+  serviceDiscovery:
+    cloudMap:
+      namespaceName: "reinvent-2019"
+      serviceName: front-end
+  logging:
+    accessLog:
+      file:
+        path: /dev/stdout
+  backends:
+    - virtualService:
+        virtualServiceName: orders
+---
+apiVersion: appmesh.k8s.aws/v1beta1
+kind: VirtualService
+metadata:
+  name: front-end
+  namespace: sock-shop
+spec:
+  meshName: "reinvent-2019"
+  virtualRouter:
+    name: front-end-router
+    listeners:
+      - portMapping:
+          port: 27017
+          protocol: tcp
+  routes:
+    - name: route-front-end
+      http:
+        match:
+          prefix: /
+        action:
+          weightedTargets:
+            - virtualNodeName: carts-db
+              weight: 1
+---
+apiVersion: appmesh.k8s.aws/v1beta1
+kind: VirtualNode
+metadata:
+  name: orders-db
+  namespace: sock-shop
+spec:
+  meshName: "reinvent-2019"
+  listeners:
+    - portMapping:
+        port: 27017
+        protocol: tcp
+  serviceDiscovery:
+    cloudMap:
+      namespaceName: "reinvent-2019"
+      serviceName: orders-db
+  logging:
+    accessLog:
+      file:
+        path: /dev/stdout
+---
+apiVersion: appmesh.k8s.aws/v1beta1
+kind: VirtualService
+metadata:
+  name: orders-db
+  namespace: sock-shop
+spec:
+  meshName: "reinvent-2019"
+  virtualRouter:
+    name: orders-db-router
+    listeners:
+      - portMapping:
+          port: 27017
+          protocol: tcp
+  routes:
+    - name: route-orders-db
+      tcp:
+        action:
+          weightedTargets:
+            - virtualNodeName: orders-db
+              weight: 1
+
+
+---
+apiVersion: appmesh.k8s.aws/v1beta1
+kind: VirtualNode
+metadata:
+  name: orders
+  namespace: sock-shop
+spec:
+  meshName: "reinvent-2019"
+  listeners:
+    - portMapping:
+        port: 80
+        protocol: http
+  serviceDiscovery:
+    cloudMap:
+      namespaceName: "reinvent-2019"
+      serviceName: orders
+  logging:
+    accessLog:
+      file:
+        path: /dev/stdout
+---
+apiVersion: appmesh.k8s.aws/v1beta1
+kind: VirtualService
+metadata:
+  name: orders
+  namespace: sock-shop
+spec:
+  meshName: "reinvent-2019"
+  virtualRouter:
+    name: orders-router
+    listeners:
+      - portMapping:
+          port: 80
+          protocol: http
+  routes:
+    - name: route-orders
+      http:
+        match:
+          prefix: /
+        action:
+          weightedTargets:
+            - virtualNodeName: orders
+              weight: 1
+
+
+---
+apiVersion: appmesh.k8s.aws/v1beta1
+kind: VirtualNode
+metadata:
+  name: payment
+  namespace: sock-shop
+spec:
+  meshName: "reinvent-2019"
+  listeners:
+    - portMapping:
+        port: 80
+        protocol: http
+  serviceDiscovery:
+    cloudMap:
+      namespaceName: "reinvent-2019"
+      serviceName: payment
+  logging:
+    accessLog:
+      file:
+        path: /dev/stdout
+---
+apiVersion: appmesh.k8s.aws/v1beta1
+kind: VirtualService
+metadata:
+  name: payment
+  namespace: sock-shop
+spec:
+  meshName: "reinvent-2019"
+  virtualRouter:
+    name: payment-router
+    listeners:
+      - portMapping:
+          port: 80
+          protocol: http
+  routes:
+    - name: route-payment
+      http:
+        match:
+          prefix: /
+        action:
+          weightedTargets:
+            - virtualNodeName: payment
+              weight: 1
+
+
+---
+apiVersion: appmesh.k8s.aws/v1beta1
+kind: VirtualNode
+metadata:
+  name: payment
+  namespace: sock-shop
+spec:
+  meshName: "reinvent-2019"
+  listeners:
+    - portMapping:
+        port: 80
+        protocol: http
+  serviceDiscovery:
+    cloudMap:
+      namespaceName: "reinvent-2019"
+      serviceName: payment
+  logging:
+    accessLog:
+      file:
+        path: /dev/stdout
+---
+apiVersion: appmesh.k8s.aws/v1beta1
+kind: VirtualService
+metadata:
+  name: payment
+  namespace: sock-shop
+spec:
+  meshName: "reinvent-2019"
+  virtualRouter:
+    name: payment-router
+    listeners:
+      - portMapping:
+          port: 80
+          protocol: http
+  routes:
+    - name: route-payment
+      http:
+        match:
+          prefix: /
+        action:
+          weightedTargets:
+            - virtualNodeName: payment
+              weight: 1
+
+
+---
+apiVersion: appmesh.k8s.aws/v1beta1
+kind: VirtualNode
+metadata:
+  name: queue-master
+  namespace: sock-shop
+spec:
+  meshName: "reinvent-2019"
+  listeners:
+    - portMapping:
+        port: 80
+        protocol: http
+  serviceDiscovery:
+    cloudMap:
+      namespaceName: "reinvent-2019"
+      serviceName: queue-master
+  logging:
+    accessLog:
+      file:
+        path: /dev/stdout
+---
+apiVersion: appmesh.k8s.aws/v1beta1
+kind: VirtualService
+metadata:
+  name: queue-master
+  namespace: sock-shop
+spec:
+  meshName: "reinvent-2019"
+  virtualRouter:
+    name: queue-master-router
+    listeners:
+      - portMapping:
+          port: 80
+          protocol: http
+  routes:
+    - name: route-queue-master
+      http:
+        match:
+          prefix: /
+        action:
+          weightedTargets:
+            - virtualNodeName: queue-master
+              weight: 1
+
+
+---
+apiVersion: appmesh.k8s.aws/v1beta1
+kind: VirtualNode
+metadata:
+  name: rabbitmq
+  namespace: sock-shop
+spec:
+  meshName: "reinvent-2019"
+  listeners:
+    - portMapping:
+        port: 5672
+        protocol: tcp
+  serviceDiscovery:
+    cloudMap:
+      namespaceName: "reinvent-2019"
+      serviceName: rabbitmq
+  logging:
+    accessLog:
+      file:
+        path: /dev/stdout
+---
+apiVersion: appmesh.k8s.aws/v1beta1
+kind: VirtualService
+metadata:
+  name: rabbitmq
+  namespace: sock-shop
+spec:
+  meshName: "reinvent-2019"
+  virtualRouter:
+    name: rabbitmq-router
+    listeners:
+      - portMapping:
+          port: 5672
+          protocol: tcp
+  routes:
+    - name: route-rabbitmq
+      tcp:
+        action:
+          weightedTargets:
+            - virtualNodeName: rabbitmq
+              weight: 1
+
+
+---
+apiVersion: appmesh.k8s.aws/v1beta1
+kind: VirtualNode
+metadata:
+  name: shipping
+  namespace: sock-shop
+spec:
+  meshName: "reinvent-2019"
+  listeners:
+    - portMapping:
+        port: 80
+        protocol: http
+  serviceDiscovery:
+    cloudMap:
+      namespaceName: "reinvent-2019"
+      serviceName: shipping
+  logging:
+    accessLog:
+      file:
+        path: /dev/stdout
+---
+apiVersion: appmesh.k8s.aws/v1beta1
+kind: VirtualService
+metadata:
+  name: shipping
+  namespace: sock-shop
+spec:
+  meshName: "reinvent-2019"
+  virtualRouter:
+    name: shipping-router
+    listeners:
+      - portMapping:
+          port: 80
+          protocol: http
+  routes:
+    - name: route-shipping
+      http:
+        match:
+          prefix: /
+        action:
+          weightedTargets:
+            - virtualNodeName: shipping
+              weight: 1
+
+
+---
+apiVersion: appmesh.k8s.aws/v1beta1
+kind: VirtualNode
+metadata:
+  name: user-db
+  namespace: sock-shop
+spec:
+  meshName: "reinvent-2019"
+  listeners:
+    - portMapping:
+        port: 27017
+        protocol: tcp
+  serviceDiscovery:
+    cloudMap:
+      namespaceName: "reinvent-2019"
+      serviceName: user-db
+  logging:
+    accessLog:
+      file:
+        path: /dev/stdout
+---
+apiVersion: appmesh.k8s.aws/v1beta1
+kind: VirtualService
+metadata:
+  name: user-db
+  namespace: sock-shop
+spec:
+  meshName: "reinvent-2019"
+  virtualRouter:
+    name: user-db-router
+    listeners:
+      - portMapping:
+          port: 27017
+          protocol: tcp
+  routes:
+    - name: route-user-db
+      tcp:
+        action:
+          weightedTargets:
+            - virtualNodeName: user-db
+              weight: 1
+
+
+---
+apiVersion: appmesh.k8s.aws/v1beta1
+kind: VirtualNode
+metadata:
+  name: user
+  namespace: sock-shop
+spec:
+  meshName: "reinvent-2019"
+  listeners:
+    - portMapping:
+        port: 80
+        protocol: http
+  serviceDiscovery:
+    cloudMap:
+      namespaceName: "reinvent-2019"
+      serviceName: user
+  logging:
+    accessLog:
+      file:
+        path: /dev/stdout
+---
+apiVersion: appmesh.k8s.aws/v1beta1
+kind: VirtualService
+metadata:
+  name: user
+  namespace: sock-shop
+spec:
+  meshName: "reinvent-2019"
+  virtualRouter:
+    name: user-router
+    listeners:
+      - portMapping:
+          port: 80
+          protocol: http
+  routes:
+    - name: route-user
+      http:
+        match:
+          prefix: /
+        action:
+          weightedTargets:
+            - virtualNodeName: user
+              weight: 1
+
+
