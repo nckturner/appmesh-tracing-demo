@@ -22,3 +22,5 @@ spec:
     image:
       repository: 352684330888.dkr.ecr.us-west-2.amazonaws.com/amazon/aws-app-mesh-inject
       tag: v0.3.1-alpha.1
+    sidecar:
+      logLevel: debug
