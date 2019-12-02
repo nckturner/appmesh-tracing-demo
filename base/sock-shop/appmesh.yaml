@@ -101,9 +101,11 @@ spec:
         port: 3306
         protocol: tcp
   serviceDiscovery:
-    cloudMap:
-      namespaceName: "reinvent-2019"
-      serviceName: catalogue-db
+    dns:
+      hostname: catalogue-db.sock-shop.cluster.local
+    #cloudMap:
+    #  namespaceName: "reinvent-2019"
+    #  serviceName: catalogue-db
   logging:
     accessLog:
       file:
