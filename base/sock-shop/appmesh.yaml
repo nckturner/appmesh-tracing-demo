@@ -129,9 +129,6 @@ spec:
             - virtualNodeName: catalogue-db
               weight: 1
 
-
-
-
 ---
 apiVersion: appmesh.k8s.aws/v1beta1
 kind: VirtualNode
