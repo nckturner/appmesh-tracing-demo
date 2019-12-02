@@ -573,6 +573,9 @@ spec:
     accessLog:
       file:
         path: /dev/stdout
+  backends:
+    - virtualService:
+        virtualServiceName: user-db
 ---
 apiVersion: appmesh.k8s.aws/v1beta1
 kind: VirtualService
